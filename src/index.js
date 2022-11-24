@@ -4,12 +4,16 @@ import {
   createBrowserRouter,
   RouterProvider,
   Link,
-} from "react-router-dom";
+} from 'react-router-dom';
 
 import App from './App';
 import Apply from './pages/apply';
 import Requests from './pages/requests';
 import Admin from './pages/admin';
+import FacultyLogin from './pages/login/faculty';
+import HodLogin from './pages/login/hod';
+import AdminLogin from './pages/login/admin';
+import db from './db';
 
 import './index.css';
 import '@fontsource/public-sans';
@@ -43,7 +47,21 @@ const router = createBrowserRouter([
 			},
 		],
 	},
+	{
+		path: 'login',
+		element: <FacultyLogin />,
+	},
+	{
+		path: 'hod/login',
+		element: <HodLogin />,
+	},
+	{
+		path: 'admin/login',
+		element: <AdminLogin />,
+	},
 ]);
+
+db.load();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

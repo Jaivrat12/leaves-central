@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Container, Typography } from '@mui/material';
 import LeaveRequest from '../components/LeaveRequest';
+import db from '../db';
 
+// eslint-disable-next-line no-unused-vars
 const dummyRequests = [
 	{
 		id: 1,
@@ -47,30 +49,17 @@ const dummyRequests = [
 
 const Requests = () => {
 
-	const [requests, setRequests] = useState(JSON.parse(localStorage.getItem('requests')) ?? []);
-	let activeRequests = [], history = [];
+	const fetchRequests = () => ({
+		active: db.requests.getAll({ active: true }),
+		history: db.requests.getAll({ history: true })
+	});
+	const [requests, setRequests] = useState(fetchRequests());
 
 	const approve = (id, isApproved) => {
 
-		const newRequests = requests.slice();
-		for (let i = 0; i < newRequests.length; i++) {
-			if (newRequests[i].id === id) {
-				newRequests[i].isApproved = isApproved;
-				break;
-			}
-		}
-		setRequests(newRequests);
-		localStorage.setItem('requests', JSON.stringify(newRequests));
+		db.requests.approve(id, isApproved);
+		setRequests(fetchRequests());
 	};
-
-	requests.forEach((request) => {
-
-		if (request.isApproved === null) {
-			activeRequests.push(request);
-		} else {
-			history.push(request);
-		}
-	});
 
     return (
 
@@ -82,7 +71,7 @@ const Requests = () => {
                 Leave Requests
             </Typography>
 
-            { activeRequests.map((request) => (
+            { requests.active.map((request) => (
                 <LeaveRequest key={ request.id } request={ request } approve={ approve } />
             ))}
 
@@ -95,7 +84,7 @@ const Requests = () => {
                 History
             </Typography>
 
-            { history.map((request) => (
+            { requests.history.map((request) => (
                 <LeaveRequest key={ request.id } request={ request } />
             ))}
         </Container>

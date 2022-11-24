@@ -1,43 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Button, Container, Grid, TextField, Typography } from '@mui/material';
+import db from '../db';
 
-const users = [
-    {
-        id: 'ABC123',
-        name: 'XYZ',
-        leaves: [
-            {
-                type: 'Vacation Leave',
-                max: 30,
-                taken: 0
-            },
-            {
-                type: 'Casual Leave',
-                max: 30,
-                taken: 0
-            },
-            {
-                type: 'Optional Leave',
-                max: 2,
-                taken: 0
-            },
-        ]
-    }
-];
+const newApplication = (user) => ({
+    type: '',
+    userId: user?.id || '',
+    name: user?.name || '',
+    email: user?.email || '',
+    from: new Date().toISOString().split('T')[0],
+    for: 1,
+    description: ''
+});
 
 const Apply = () => {
 
-    const [userId, setUserId] = useState('ABC123');
-    const getUser = () => users.find((user) => user.id === userId);
-    const [user, setUser] = useState(getUser(userId));
-    const [application, setApplication] = useState({
-        type: '',
-        by: '',
-        email: '',
-        from: new Date().toISOString().split('T')[0],
-        for: 1,
-        description: ''
-    });
+    const [userId, setUserId] = useState('GESA12');
+    const [user, setUser] = useState(db.users.get(userId));
+    const [application, setApplication] = useState(newApplication());
 
     const handleChange = (prop, value) => {
         setApplication({
@@ -59,6 +38,10 @@ const Apply = () => {
         localStorage.setItem('requests', JSON.stringify(requests));
         alert('Your request has been submitted!');
     }
+
+    useEffect(() => {
+        setApplication(newApplication(user));
+    }, [user]);
 
     return (
 
@@ -87,7 +70,7 @@ const Apply = () => {
 
                 <Button
                     variant="contained"
-                    onClick={ () => setUser(getUser(userId)) }
+                    onClick={ () => setUser(db.users.get(userId)) }
                 >
                     Fetch Leaves Data
                 </Button>
@@ -97,46 +80,65 @@ const Apply = () => {
 
                 <form onSubmit={ submitRequest }>
                     <Box sx={{ mb: 3 }}>
-                        <Grid container>
-                            <Grid item xs={4}>
-                                <Typography textAlign="center" fontWeight="bold">
-                                    Leave Type
-                                </Typography>
+                        <Box display="flex" sx={{ mb: 3 }}>
+                            <input
+                                type="radio"
+                                style={{ visibility: 'hidden' }}
+                            />
+                            <Grid container>
+                                <Grid item xs={3}>
+                                    <Typography textAlign="center" fontWeight="bold">
+                                        Leave ID
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <Typography textAlign="center" fontWeight="bold">
+                                        Leave Type
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <Typography textAlign="center" fontWeight="bold">
+                                        Max available
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <Typography textAlign="center" fontWeight="bold">
+                                        Total leaves taken
+                                    </Typography>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={4}>
-                                <Typography textAlign="center" fontWeight="bold">
-                                    Max available
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Typography textAlign="center" fontWeight="bold">
-                                    Total leaves taken
-                                </Typography>
-                            </Grid>
-                        </Grid>
+                        </Box>
 
                         <hr />
 
-                        { user.leaves.map((row) => (
+                        { user.leaves.map((row) => {
 
-                            <Box display="flex">
-                                <input
-                                    type="radio"
-                                    name="leave-type"
-                                    onClick={ () => handleChange('type', row.type) }
-                                    required
-                                />
-                                <Grid container>
-                                    { Object.keys(row).map((col) => (
-                                        <Grid item xs={4}>
-                                            <Typography textAlign="center">
-                                                {row[col]}
-                                            </Typography>
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            </Box>
-                        ))}
+                            const disabled = row.max === row.taken;
+                            return (
+
+                                <Box key={ row.type } display="flex">
+                                    <input
+                                        type="radio"
+                                        name="leave-type"
+                                        onClick={ () => handleChange('type', row.type) }
+                                        required
+                                        disabled={ disabled }
+                                    />
+                                    <Grid container>
+                                        { Object.keys(row).map((col, i) => (
+                                            <Grid key={ i } item xs={3}>
+                                                <Typography
+                                                    textAlign="center"
+                                                    color={ disabled ? 'silver' : 'inherit' }
+                                                >
+                                                    {row[col]}
+                                                </Typography>
+                                            </Grid>
+                                        ))}
+                                    </Grid>
+                                </Box>
+                            )
+                        })}
                     </Box>
 
                     <Typography fontWeight="bold" gutterBottom>
@@ -147,8 +149,8 @@ const Apply = () => {
                         <TextField
                             size="small"
                             label="Fullname"
-                            value={ application.by }
-                            onChange={ (e) => handleChange('by', e.target.value) }
+                            value={ application.name }
+                            onChange={ (e) => handleChange('name', e.target.value) }
                             fullWidth
                             required
                         />

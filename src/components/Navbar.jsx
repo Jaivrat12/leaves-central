@@ -107,7 +107,7 @@ const Navbar = () => {
                             }}
                         >
                             {pages.map(({ title, href }) => (
-                                <Link to={ href } style={{
+                                <Link key={ title } to={ href } style={{
                                     color: 'inherit',
                                     textDecoration: 'none',
                                 }}>
@@ -150,7 +150,7 @@ const Navbar = () => {
                         display: { xs: 'none', md: 'flex' }
                     }}>
                         {pages.map(({ title, href }) => (
-                            <Link to={ href } style={{
+                            <Link key={ title } to={ href } style={{
                                 color: 'inherit',
                                 textDecoration: 'none',
                             }}>

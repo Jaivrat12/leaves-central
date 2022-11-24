@@ -49,7 +49,7 @@ const LeaveRequest = ({ request, approve }) => {
                 // marginBottom={ 1 }
             >
                 <Typography>
-                    by {request.by}
+                    by {request.name}
                 </Typography>
 
                 { request.isApproved === null && (
