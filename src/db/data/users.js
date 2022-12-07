@@ -7,7 +7,7 @@ const users = [
         name: 'Irfan',
         email: 'irfan@acropolis.in',
         role: 'admin',
-        designation: '',
+        designation: 'Admin',
         doj: '2016-07-11',
         leaves: leaves.default
     },
