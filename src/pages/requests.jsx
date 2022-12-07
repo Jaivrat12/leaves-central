@@ -49,9 +49,18 @@ const dummyRequests = [
 
 const Requests = () => {
 
+	const user = db.session.get().user;
+	const hasAdminRole = ['hod', 'admin'].includes(user.role);
+
 	const fetchRequests = () => ({
-		active: db.requests.getAll({ active: true }),
-		history: db.requests.getAll({ history: true })
+		active: db.requests.getAll({
+			userId: !hasAdminRole && user.id,
+			active: true
+		}),
+		history: db.requests.getAll({
+			userId: !hasAdminRole && user.id,
+			history: true
+		})
 	});
 	const [requests, setRequests] = useState(fetchRequests());
 
@@ -68,13 +77,19 @@ const Requests = () => {
                 variant="h6"
                 color="GrayText"
             >
-                Leave Requests
+                { !hasAdminRole ? 'Your ' : 'All Leave ' }
+				Requests
             </Typography>
 
             { requests.active.map((request) => (
-                <LeaveRequest key={ request.id } request={ request } approve={ approve } />
-            ))}
 
+                <LeaveRequest
+					key={ request.id }
+					request={ request }
+					isApprovable={ hasAdminRole }
+					approve={ approve }
+				/>
+            ))}
 
             <Typography
                 variant="h6"
@@ -85,7 +100,11 @@ const Requests = () => {
             </Typography>
 
             { requests.history.map((request) => (
-                <LeaveRequest key={ request.id } request={ request } />
+
+                <LeaveRequest
+					key={ request.id }
+					request={ request }
+				/>
             ))}
         </Container>
     );

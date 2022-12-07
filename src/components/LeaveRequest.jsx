@@ -1,6 +1,6 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography } from '@mui/material';
 
-const LeaveRequest = ({ request, approve }) => {
+const LeaveRequest = ({ request, isApprovable, approve }) => {
 
     return (
 
@@ -15,7 +15,7 @@ const LeaveRequest = ({ request, approve }) => {
                     <b>{request.type}</b> request
                 </Typography>
 
-                { request.isApproved === null ? (
+                { request.isApproved === null ? isApprovable && (
                     <Box display="flex" gap={1}>
                         <Button
                             variant="contained"
@@ -52,7 +52,7 @@ const LeaveRequest = ({ request, approve }) => {
                     by {request.name}
                 </Typography>
 
-                { request.isApproved === null && (
+                { request.isApproved === null && isApprovable && (
                     <textarea
                         rows="1" cols="30"
                         placeholder=" Your (HoD) comments here..."

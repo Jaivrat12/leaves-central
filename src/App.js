@@ -1,22 +1,32 @@
 import { Box } from '@mui/material';
 import { useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import db from './db';
 
 const App = () => {
 
+	const location = useLocation()
 	const navigate = useNavigate();
-	const session = db.session.get();
+	const user = db.session.get().user;
+
 	useEffect(() => {
 
-		console.log(session);
-		if (session.user === null) {
+		console.log(user);
+		if (!user) {
 			navigate('/login');
 		}
-	}, [navigate, session]);
+		if (location.pathname === '/') {
+			navigate('/apply');
+		}
+		if (location.pathname.startsWith('/admin')
+			&& user.role !== 'admin'
+		) {
+			navigate('/');
+		}
+	}, [location.pathname, navigate, user]);
 
-	return session.user && (
+	return user && (
 
 		<>
 			<Navbar />

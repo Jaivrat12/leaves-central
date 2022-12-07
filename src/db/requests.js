@@ -11,6 +11,13 @@ const requests = {
     getAll: (filters) => {
 
         let requests = JSON.parse(localStorage.getItem('requests'));
+
+        if (filters?.userId) {
+            requests = requests.filter((request) =>
+                request.userId === filters.userId
+            );
+        }
+
         if (filters?.active) {
             requests = requests.filter((request) =>
                 request.isApproved === null
@@ -20,6 +27,7 @@ const requests = {
                 request.isApproved !== null
             );
         }
+
         return requests;
     },
     post: function (request) {

@@ -7,9 +7,16 @@ const users = {
         const users = this.getAll();
         return users.find((user) => user.id === id);
     },
-    getAll: () => parse(
-        localStorage.getItem('users')
-    ),
+    getAll: (filters) => {
+
+        let users = parse(localStorage.getItem('users'));
+        if (filters?.role) {
+            users = users.filter((user) =>
+                user.role === filters.role
+            );
+        }
+        return users;
+    },
     put: function (id, newData) {
 
         const users = this.getAll();

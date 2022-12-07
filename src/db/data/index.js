@@ -3,7 +3,7 @@ import users from './users';
 
 const data = {
     requests, users,
-    session: { user: users[0] }
+    session: { user: null }
 };
 
 export default data;

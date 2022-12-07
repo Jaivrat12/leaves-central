@@ -1,29 +1,36 @@
-import { useEffect, useState } from 'react';
-import { Box, Button, Container, Grid, TextField, Typography } from '@mui/material';
+import { useState } from 'react';
+import {
+    Box,
+    Button,
+    Container,
+    Grid,
+    TextField,
+    Typography
+} from '@mui/material';
 import db from '../db';
-
-const newApplication = (user) => ({
-    type: '',
-    userId: user?.id || '',
-    name: user?.name || '',
-    email: user?.email || '',
-    from: new Date().toISOString().split('T')[0],
-    for: 1,
-    description: ''
-});
+import { useNavigate } from 'react-router-dom';
 
 const Apply = () => {
 
-    const [userId, setUserId] = useState('GESA12');
-    const [user, setUser] = useState(db.users.get(userId));
-    const [application, setApplication] = useState(newApplication());
+    const navigate = useNavigate();
+
+    const user = db.users.get(db.session.get().user.id);
+    const [application, setApplication] = useState({
+        type: '',
+        userId: user.id,
+        name: user.name,
+        email: user.email,
+        from: new Date().toISOString().split('T')[0],
+        for: 1,
+        description: ''
+    });
 
     const handleChange = (prop, value) => {
         setApplication({
             ...application,
             [prop]: value
         });
-    }
+    };
 
     const submitRequest = (e) => {
 
@@ -37,11 +44,8 @@ const Apply = () => {
         });
         localStorage.setItem('requests', JSON.stringify(requests));
         alert('Your request has been submitted!');
-    }
-
-    useEffect(() => {
-        setApplication(newApplication(user));
-    }, [user]);
+        navigate('/requests');
+    };
 
     return (
 
@@ -54,27 +58,6 @@ const Apply = () => {
             >
                 Apply for Leave
             </Typography>
-
-            <Box
-                display="flex"
-                justifyContent="center"
-                marginBottom={ 3 }
-            >
-                <TextField
-                    size="small"
-                    label="Your ID (6 characters)"
-                    value={ userId }
-                    onChange={ (e) => setUserId(e.target.value) }
-                    sx={{ mr: 2 }}
-                />
-
-                <Button
-                    variant="contained"
-                    onClick={ () => setUser(db.users.get(userId)) }
-                >
-                    Fetch Leaves Data
-                </Button>
-            </Box>
 
             { user && (
 
@@ -152,6 +135,7 @@ const Apply = () => {
                             value={ application.name }
                             onChange={ (e) => handleChange('name', e.target.value) }
                             fullWidth
+                            disabled
                             required
                         />
 
@@ -162,6 +146,7 @@ const Apply = () => {
                             value={ application.email }
                             onChange={ (e) => handleChange('email', e.target.value) }
                             fullWidth
+                            disabled
                             required
                         />
                     </Box>

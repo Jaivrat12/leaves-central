@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
     Avatar,
     Box,
@@ -12,26 +13,48 @@ import {
 } from '@mui/material';
 import { AppBar, Toolbar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
-// import AdbIcon from '@mui/icons-material/Adb';
+import db from '../db';
 
-const pages = [
-    {
-        title: 'Apply for Leave',
-        href: '/apply'
-    },
-    {
-        title: 'Leave Requests',
-        href: '/requests'
-    },
-    {
-        title: 'Admin',
-        href: '/admin'
-    }
-];
-const profilePages = ['Account', 'Logout'];
+const pages = {
+    faculty: [
+        {
+            title: 'Apply for Leave',
+            href: '/apply'
+        },
+        {
+            title: 'Your Requests',
+            href: '/requests'
+        },
+    ],
+    hod: [
+        {
+            title: 'Apply for Leave',
+            href: '/apply'
+        },
+        {
+            title: 'Leave Requests',
+            href: '/requests'
+        }
+    ],
+    admin: [
+        {
+            title: 'Apply for Leave',
+            href: '/apply'
+        },
+        {
+            title: 'Leave Requests',
+            href: '/requests'
+        },
+        {
+            title: 'Admin Panel',
+            href: '/admin'
+        }
+    ],
+};
 
 const Navbar = () => {
+
+    const navigate = useNavigate();
 
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -51,13 +74,30 @@ const Navbar = () => {
         setAnchorElUser(null);
     };
 
+    const userPages = pages[db.session.get().user.role];
+
+    const userMenu = [
+        {
+            title: 'Account',
+            action: handleCloseUserMenu
+        },
+        {
+            title: 'Logout',
+            action: () => {
+                db.session.logout();
+                handleCloseUserMenu();
+                navigate('/login');
+            }
+        }
+    ];
+
     return (
 
         <AppBar position="static" sx={{ background: '#45a' }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
-                    <Link to="/" style={{
+                    <Link to="/apply" style={{
                         color: 'inherit',
                         textDecoration: 'none',
                     }}>
@@ -106,7 +146,7 @@ const Navbar = () => {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            {pages.map(({ title, href }) => (
+                            {userPages.map(({ title, href }) => (
                                 <Link key={ title } to={ href } style={{
                                     color: 'inherit',
                                     textDecoration: 'none',
@@ -149,7 +189,7 @@ const Navbar = () => {
                         flexGrow: 1,
                         display: { xs: 'none', md: 'flex' }
                     }}>
-                        {pages.map(({ title, href }) => (
+                        {userPages.map(({ title, href }) => (
                             <Link key={ title } to={ href } style={{
                                 color: 'inherit',
                                 textDecoration: 'none',
@@ -187,9 +227,9 @@ const Navbar = () => {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {profilePages.map((page) => (
-                                <MenuItem key={page} onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center">{page}</Typography>
+                            {userMenu.map((item) => (
+                                <MenuItem key={item.title} onClick={item.action}>
+                                    <Typography textAlign="center">{item.title}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>

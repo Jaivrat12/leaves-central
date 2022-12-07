@@ -3,7 +3,7 @@ import leaves from './leaves';
 const users = [
     {
         id: 'IRFN12',
-        pass: 'admin',
+        password: 'admin',
         name: 'Irfan',
         email: 'irfan@acropolis.in',
         role: 'admin',
@@ -13,10 +13,10 @@ const users = [
     },
     {
         id: 'GESA12',
-        pass: 'admin',
+        password: 'admin',
         name: 'Geeta Santosh',
         email: 'geetasantosh@acropolis.in',
-        role: 'HOD',
+        role: 'hod',
         designation: 'HOD',
         doj: '2016-07-11',
         leaves: leaves.default
